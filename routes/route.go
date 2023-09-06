@@ -15,5 +15,5 @@ func SetUpRoute(router fiber.Router) {
 		})
 	})
 
-	route.Get("/", controllers.GetAllProducts)
+	route.Get("/products", controllers.GetAllProducts)
 }
