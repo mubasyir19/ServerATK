@@ -7,77 +7,74 @@ import (
 	"gorm.io/gorm"
 )
 
+
 type User struct {
 	gorm.Model
-	ID          uuid.UUID `gorm:"type:uuid"`
-	Username    string
-	Password    string
-	NamaLengkap string
-	Alamat      string
-	NoTelpon    string
-	Pesanan     Pesanan
-	Keranjang   Keranjang
+	ID 				uuid.UUID
+	Username 		string
+	Password 		string
+	FullName 		string
+	Address 		string
+	PhoneNumber 	string
+	Orders 			[]Order `gorm:"foreignKey:UserID"`
 }
 
-type Kategori struct {
+type Category struct {
 	gorm.Model
-	ID     uuid.UUID `gorm:"type:uuid"`
-	Nama   string
-	Produk []Produk // One-to-many => 1 kategori punya banyak produk
+	ID 			uuid.UUID
+	Name 		string
+	Products	[]Product `gorm:"foreignKey:CategoryID"`
 }
 
-type Produk struct {
+type Product struct {
 	gorm.Model
-	ID             uuid.UUID `gorm:"type:uuid"`
-	Nama           string
-	Deskripsi      string
-	Harga          string
-	Stok           int64
-	Foto           string
-	KategoriProduk uint
+	ID 				uuid.UUID
+	Name 			string
+	Description 	string
+	Price 			float64
+	Stock 			int64
+	Photo 			string
+	CategoryID 		uint
 }
 
-type Pesanan struct {
+type Order struct {
 	gorm.Model
-	ID         uuid.UUID `gorm:"type:uuid"`
-	UserID     uint
-	Tanggal    time.Time `gorm:"type:datetime"`
-	HargaTotal int64
-	// StatusPesanan
-	AlamatKirim string
-	ItemPesanan []ItemPesanan
-	Pembayaran  Pembayaran
+	ID         		uuid.UUID
+	UserID     		uint
+	Date    		time.Time
+	TotalPrice 		float64
+	AlamatKirim 	string
+	OrderDetails 	[]OrderDetail `gorm:"foreignKey:OrderID"`
 }
 
-type ItemPesanan struct {
+type OrderDetail struct {
 	gorm.Model
-	ID          uuid.UUID `gorm:"type:uuid"`
-	OrderID     uint
-	ProdukID    uint
-	Jumlah      int64
-	HargaSatuan int64
-	SubTotal    int64
+	ID          	uuid.UUID
+	OrderID     	uint
+	ProductID    	uint
+	Quantity      	int64
+	UnitPrice 		int64
+	SubTotal    	int64
 }
 
-type Keranjang struct {
+type Cart struct {
 	gorm.Model
-	ID     uuid.UUID `gorm:"type:uuid"`
-	UserID uint
+	ID     	uuid.UUID
+	UserID 	uint
 }
 
 type StatusBayar string
 
 const (
 	StatusPending StatusBayar = "Pending"
-	StatusLunas   StatusBayar = "Lunas"
-	StatusGagal   StatusBayar = "Gagal"
+	StatusLunas   StatusBayar = "Success"
+	StatusGagal   StatusBayar = "Failed"
 )
 
-type Pembayaran struct {
+type Payment struct {
 	gorm.Model
-	ID uuid.UUID `gorm:"type:uuid"`
-	// MetodeBayar
-	TotalBayar   int64
-	TanggalBayar time.Time `gorm:"type:datetime"`
-	Status       StatusBayar
+	ID 			uuid.UUID
+	TotalPay   	float64
+	PayDate 	time.Time
+	Status		StatusBayar
 }

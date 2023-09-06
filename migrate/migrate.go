@@ -11,32 +11,45 @@ func init() {
 	database.ConnectDB()
 }
 
+func Migration() {
+	database.DB.AutoMigrate(
+		&models.User{}, 
+		&models.Category{},
+		&models.Product{}, 
+		&models.Product{}, 
+		&models.OrderDetail{}, 
+		&models.Cart{}, 
+		&models.Payment{},
+	)
+}
+
 func CreateTable() {
 	migrator := database.DB.Migrator()
 
 	migrator.CreateTable(&models.User{})
-	migrator.CreateTable(&models.Kategori{})
-	migrator.CreateTable(&models.Produk{})
-	migrator.CreateTable(&models.Pesanan{})
-	migrator.CreateTable(&models.ItemPesanan{})
-	migrator.CreateTable(&models.Keranjang{})
-	migrator.CreateTable(&models.Pembayaran{})
+	migrator.CreateTable(&models.Category{})
+	migrator.CreateTable(&models.Product{})
+	migrator.CreateTable(&models.Product{})
+	migrator.CreateTable(&models.OrderDetail{})
+	migrator.CreateTable(&models.Cart{})
+	migrator.CreateTable(&models.Payment{})
 }
 
 func DropTable() {
 	migrator := database.DB.Migrator()
 
 	migrator.DropTable(&models.User{})
-	migrator.DropTable(&models.Kategori{})
-	migrator.DropTable(&models.Produk{})
-	migrator.DropTable(&models.Pesanan{})
-	migrator.DropTable(&models.ItemPesanan{})
-	migrator.DropTable(&models.Keranjang{})
-	migrator.DropTable(&models.Pembayaran{})
+	migrator.DropTable(&models.Category{})
+	migrator.DropTable(&models.Product{})
+	migrator.DropTable(&models.Order{})
+	migrator.DropTable(&models.OrderDetail{})
+	migrator.DropTable(&models.Cart{})
+	migrator.DropTable(&models.Payment{})
 }
 
 func main() {
 	// Select one of the below, then run => go run migrate/migrate.go
-	CreateTable()
+	Migration()
+	// CreateTable()
 	// DropTable()
 }
