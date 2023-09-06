@@ -16,4 +16,6 @@ func SetUpRoute(router fiber.Router) {
 	})
 
 	route.Get("/products", controllers.GetAllProducts)
+	route.Get("/categories", controllers.GetAllCategories)
+	route.Post("/add/category", controllers.AddCategory)
 }
