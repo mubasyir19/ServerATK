@@ -28,6 +28,6 @@ func GetAllProducts(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "Success save data to database",
-		"data":    result,
+		"data":    products,
 	})
 }
