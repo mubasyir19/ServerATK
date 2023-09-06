@@ -1,6 +1,10 @@
 package routes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"ServerATK/controllers"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func SetUpRoute(router fiber.Router) {
 	route := router.Group("/api")
@@ -10,4 +14,6 @@ func SetUpRoute(router fiber.Router) {
 			"message": "Hello World",
 		})
 	})
+
+	route.Get("/", controllers.GetAllProducts)
 }
