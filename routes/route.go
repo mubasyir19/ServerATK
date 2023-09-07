@@ -17,5 +17,6 @@ func SetUpRoute(router fiber.Router) {
 	route.Get("/products", admin.GetAllProducts)
 	route.Post("/products/add", admin.AddProduct)
 	route.Put("/products/edit/:id", admin.EditProduct)
+	route.Delete("/products/delete/:id", admin.DeleteProduct)
 
 }

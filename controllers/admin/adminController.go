@@ -3,6 +3,7 @@ package admin
 import (
 	"ServerATK/database"
 	"ServerATK/models"
+	"os"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -290,4 +291,31 @@ func EditProduct(c *fiber.Ctx) error {
 		"message": "Product updated successfully",
 		"result":  product,
 	})
+}
+
+func DeleteProduct(c *fiber.Ctx) error {
+	db := database.DB
+
+	productID := c.Params("id")
+
+	var product models.Product
+
+	if product.Photo != "" {
+		if err := os.Remove(product.Photo); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to delete product photo",
+			})
+		}
+	}
+
+	if err := db.Delete(&product, "id = ?", productID).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "An error occurred while deleting category",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Success delete data product",
+	})
+
 }
