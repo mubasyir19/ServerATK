@@ -3,6 +3,7 @@ package admin
 import (
 	"ServerATK/database"
 	"ServerATK/models"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -140,5 +141,67 @@ func GetAllProducts(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message": "Success save data to database",
 		"result":  products,
+	})
+}
+
+func AddProduct(c *fiber.Ctx) error {
+	db := database.DB
+
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+
+	priceStr := c.FormValue("price")
+	price, err := strconv.ParseFloat(priceStr, 64)
+	if err != nil {
+		return err
+	}
+
+	stockStr := c.FormValue("stock")
+	stock, err := strconv.ParseInt(stockStr, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	// categoryIDStr := c.FormValue("categoryID")
+	// if categoryIDStr == "" {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"message": "categoryID cannot be empty",
+	// 	})
+	// }
+	// categoryIDUint, err := strconv.ParseUint(categoryIDStr, 10, 64)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	// 		"message": "categoryID must be a valid number",
+	// 	})
+	// }
+	// categoryID := uint(categoryIDUint)
+
+	photo, err := c.FormFile("photo")
+	if err != nil {
+		return err
+	}
+
+	filename := "uploads/" + photo.Filename
+	if err := c.SaveFile(photo, filename); err != nil {
+		return err
+	}
+
+	product := models.Product{
+		Name:        name,
+		Description: description,
+		Price:       price,
+		Stock:       stock,
+		Photo:       filename,
+		// CategoryID:  categoryID,
+	}
+
+	result := db.Create(&product)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Success Add data",
+		"result":  product,
 	})
 }
