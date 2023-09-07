@@ -10,5 +10,6 @@ func SetUpRoute(router fiber.Router) {
 	route := router.Group("/api")
 
 	route.Get("/products", admin.GetAllProducts)
+	route.Get("/categories", admin.GetAllCategories)
 
 }

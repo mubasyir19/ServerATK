@@ -7,6 +7,32 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func GetAllCategories(c *fiber.Ctx) error {
+	db := database.DB
+
+	var categories []models.Category
+
+	result := db.Find(&categories)
+	if result.Error != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "Failed save data to database",
+			"error":   result.Error.Error(),
+		})
+	}
+
+	if len(categories) == 0 {
+		return c.Status(404).JSON(fiber.Map{
+			"message": "No categories found in the database",
+		})
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"message": "Success save data to database",
+		"result":  categories,
+	})
+
+}
+
 func GetAllProducts(c *fiber.Ctx) error {
 	db := database.DB
 
@@ -28,6 +54,6 @@ func GetAllProducts(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(fiber.Map{
 		"message": "Success save data to database",
-		"data":    products,
+		"result":  products,
 	})
 }
