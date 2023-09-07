@@ -162,19 +162,19 @@ func AddProduct(c *fiber.Ctx) error {
 		return err
 	}
 
-	// categoryIDStr := c.FormValue("categoryID")
-	// if categoryIDStr == "" {
-	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	// 		"message": "categoryID cannot be empty",
-	// 	})
-	// }
-	// categoryIDUint, err := strconv.ParseUint(categoryIDStr, 10, 64)
-	// if err != nil {
-	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	// 		"message": "categoryID must be a valid number",
-	// 	})
-	// }
-	// categoryID := uint(categoryIDUint)
+	categoryIDStr := c.FormValue("categoryID")
+	if categoryIDStr == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "categoryID cannot be empty",
+		})
+	}
+
+	categoryID, err := uuid.Parse(categoryIDStr)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "categoryID must be a valid UUID",
+		})
+	}
 
 	photo, err := c.FormFile("photo")
 	if err != nil {
@@ -187,12 +187,13 @@ func AddProduct(c *fiber.Ctx) error {
 	}
 
 	product := models.Product{
+		ID:          uuid.New(),
 		Name:        name,
 		Description: description,
 		Price:       price,
 		Stock:       stock,
 		Photo:       filename,
-		// CategoryID:  categoryID,
+		CategoryID:  categoryID,
 	}
 
 	result := db.Create(&product)
