@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func GetAllCategories(c *fiber.Ctx) error {
@@ -55,8 +56,46 @@ func AddCategory(c *fiber.Ctx) error {
 		return result.Error
 	}
 
-	return c.JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Success Add data",
+		"result":  category,
+	})
+}
+
+func EditCategory(c *fiber.Ctx) error {
+	db := database.DB
+
+	categoryID := c.Params("id")
+
+	var category models.Category
+	find := db.First(&category, "id = ?", categoryID)
+	if find.Error != nil {
+		if find.Error == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"message": "category not found",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "A server error occurred",
+		})
+	}
+
+	name := c.FormValue("name")
+	if name == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Name cannot be empty",
+		})
+	}
+
+	category.Name = name
+	if err := db.Save(&category).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "An error occurred while updating categories",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Success update data",
 		"result":  category,
 	})
 }
