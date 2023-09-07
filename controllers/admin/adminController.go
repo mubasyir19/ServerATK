@@ -5,6 +5,7 @@ import (
 	"ServerATK/models"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func GetAllCategories(c *fiber.Ctx) error {
@@ -31,6 +32,33 @@ func GetAllCategories(c *fiber.Ctx) error {
 		"result":  categories,
 	})
 
+}
+
+func AddCategory(c *fiber.Ctx) error {
+	db := database.DB
+
+	name := c.FormValue("name")
+
+	if name == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Name cannot be empty",
+		})
+	}
+
+	var category = models.Category{
+		ID:   uuid.New(),
+		Name: name,
+	}
+
+	result := db.Create(&category)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Success Add data",
+		"result":  category,
+	})
 }
 
 func GetAllProducts(c *fiber.Ctx) error {
