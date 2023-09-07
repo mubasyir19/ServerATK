@@ -206,3 +206,88 @@ func AddProduct(c *fiber.Ctx) error {
 		"result":  product,
 	})
 }
+
+func EditProduct(c *fiber.Ctx) error {
+	db := database.DB
+
+	productID := c.Params("id")
+
+	var product models.Product
+
+	if err := db.First(&product, "id = ? ", productID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"message": "product not found",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "A server error occurred",
+		})
+	}
+
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+	priceStr := c.FormValue("price")
+	stockStr := c.FormValue("stock")
+	categoryIDStr := c.FormValue("categoryID")
+
+	if name != "" {
+		product.Name = name
+	}
+
+	if description != "" {
+		product.Description = description
+	}
+
+	if priceStr != "" {
+		price, err := strconv.ParseFloat(priceStr, 64)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": "Invalid price format",
+			})
+		}
+		product.Price = price
+	}
+
+	if stockStr != "" {
+		stock, err := strconv.ParseInt(stockStr, 10, 64)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": "Invalid stock format",
+			})
+		}
+		product.Price = float64(stock)
+	}
+
+	if categoryIDStr != "" {
+		categoryID, err := uuid.Parse(categoryIDStr)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": "Invalid category ID",
+			})
+		}
+		product.CategoryID = categoryID
+	}
+
+	photo, err := c.FormFile("photo")
+	if err == nil {
+		filename := "uploads/" + photo.Filename
+		if err := c.SaveFile(photo, filename); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "Failed to save photo",
+			})
+		}
+		product.Photo = filename
+	}
+
+	if err := db.Save(&product).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to update product",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Product updated successfully",
+		"result":  product,
+	})
+}
