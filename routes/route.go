@@ -13,5 +13,6 @@ func SetUpRoute(router fiber.Router) {
 	route.Get("/categories", admin.GetAllCategories)
 	route.Post("/categories/add", admin.AddCategory)
 	route.Put("/categories/edit/:id", admin.EditCategory)
+	route.Delete("/categories/delete/:id", admin.DeleteCategory)
 
 }

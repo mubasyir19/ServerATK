@@ -90,13 +90,31 @@ func EditCategory(c *fiber.Ctx) error {
 	category.Name = name
 	if err := db.Save(&category).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "An error occurred while updating categories",
+			"message": "An error occurred while updating category",
 		})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Success update data",
 		"result":  category,
+	})
+}
+
+func DeleteCategory(c *fiber.Ctx) error {
+	db := database.DB
+
+	categoryID := c.Params("id")
+
+	var category models.Category
+
+	if err := db.Delete(&category, "id = ?", categoryID).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "An error occurred while deleting category",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Success delete data category",
 	})
 }
 
