@@ -186,6 +186,12 @@ func AddProduct(c *fiber.Ctx) error {
 		return err
 	}
 
+	category := models.Category{}
+	ctg := db.First(&category, categoryID)
+	if ctg.Error != nil {
+		return ctg.Error
+	}
+
 	product := models.Product{
 		ID:          uuid.New(),
 		Name:        name,
@@ -193,7 +199,7 @@ func AddProduct(c *fiber.Ctx) error {
 		Price:       price,
 		Stock:       stock,
 		Photo:       filename,
-		CategoryID:  categoryID,
+		Category:    category,
 	}
 
 	result := db.Create(&product)
