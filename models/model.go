@@ -34,6 +34,7 @@ type Product struct {
 	Stock       int64
 	Photo       string
 	CategoryID  uuid.UUID
+	Category    Category `gorm:"foreignKey:CategoryID"`
 }
 
 type Order struct {
