@@ -13,12 +13,12 @@ func init() {
 
 func Migration() {
 	database.DB.AutoMigrate(
-		&models.User{}, 
+		&models.User{},
 		&models.Category{},
-		&models.Product{}, 
-		&models.Product{}, 
-		&models.OrderDetail{}, 
-		&models.Cart{}, 
+		&models.Product{},
+		&models.Product{},
+		&models.OrderDetail{},
+		&models.Cart{},
 		&models.Payment{},
 	)
 }
