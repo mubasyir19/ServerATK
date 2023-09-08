@@ -16,7 +16,7 @@ func GetAllCategories(c *fiber.Ctx) error {
 
 	var categories []models.Category
 
-	result := db.Find(&categories)
+	result := db.Preload("Products").Find(&categories)
 	if result.Error != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "Failed save data to database",
@@ -34,7 +34,6 @@ func GetAllCategories(c *fiber.Ctx) error {
 		"message": "Success save data to database",
 		"result":  categories,
 	})
-
 }
 
 func AddCategory(c *fiber.Ctx) error {
